@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"net/http"
-	"playlist/sessions" // Use the correct path to the sessions package
+	"playlist/sessions"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +27,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Set the user ID in the context
 		c.Set("userID", userID)
 		c.Next()
 	}

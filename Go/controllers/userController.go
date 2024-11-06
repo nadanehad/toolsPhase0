@@ -49,15 +49,12 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	// Generate a session ID
 	sessionID := uuid.New().String()
 
-	// Store the session ID in the session store with the user's ID
 	sessions.SessionStore.Lock()
 	sessions.SessionStore.Sessions[sessionID] = storedUser.ID
 	sessions.SessionStore.Unlock()
 
-	// Set the session ID as a cookie
 	c.SetCookie("session_id", sessionID, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful!"})
