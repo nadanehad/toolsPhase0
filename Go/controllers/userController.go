@@ -2,17 +2,15 @@ package controllers
 
 import (
 	"net/http"
-	"playlist/models" // Adjusted import path
+	"playlist/models"
+	"playlist/sessions"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
-
-func SetDB(database *gorm.DB) {
-	DB = database
-}
 
 func RegisterUser(c *gin.Context) {
 	var input models.User
@@ -30,7 +28,10 @@ func RegisterUser(c *gin.Context) {
 }
 
 func LoginUser(c *gin.Context) {
-	var loginReq models.LoginRequest
+	var loginReq struct {
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required"`
+	}
 	var storedUser models.User
 
 	if err := c.ShouldBindJSON(&loginReq); err != nil {
@@ -47,6 +48,17 @@ func LoginUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
+
+	// Generate a session ID
+	sessionID := uuid.New().String()
+
+	// Store the session ID in the session store with the user's ID
+	sessions.SessionStore.Lock()
+	sessions.SessionStore.Sessions[sessionID] = storedUser.ID
+	sessions.SessionStore.Unlock()
+
+	// Set the session ID as a cookie
+	c.SetCookie("session_id", sessionID, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful!"})
 }

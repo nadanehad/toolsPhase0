@@ -5,48 +5,56 @@ import (
 	"log"
 	"os"
 	"playlist/controllers"
+	"playlist/middleware"
 	"playlist/models"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func main() {
+func initDB() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("No .env file found")
+		log.Println("No .env file found, using default values")
 	}
 
-	// MySQL connection string
+	dbUser := os.Getenv("DB_USER")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASS"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-	)
+		dbUser, dbPass, dbHost, dbPort, dbName)
 
-	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
-		os.Exit(1)
+	var errDB error
+	controllers.DB, errDB = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if errDB != nil {
+		log.Fatal("Failed to connect to database:", errDB)
 	}
 
-	// Migrate the schema and set the DB for controllers
-	models.AutoMigrate(DB)
-	controllers.SetDB(DB)
+	// Run migrations
+	controllers.DB.AutoMigrate(&models.User{}, &models.Order{})
+}
 
-	// Create a Gin router
+func main() {
+	initDB()
+
 	router := gin.Default()
-	router.Use(cors.Default())
 
-	// Define routes
 	router.POST("/register", controllers.RegisterUser)
 	router.POST("/login", controllers.LoginUser)
 
-	// Start the server
+	protected := router.Group("/")
+	protected.Use(middleware.AuthMiddleware())
+	{
+		protected.POST("/create-order", controllers.CreateOrder)
+		protected.GET("/orders", controllers.GetUserOrders)
+		protected.GET("/order/:order_id", controllers.GetOrderDetails)
+		protected.POST("/order/:order_id/cancel", controllers.CancelOrder)
+	}
+
 	router.Run(":8080")
 }
