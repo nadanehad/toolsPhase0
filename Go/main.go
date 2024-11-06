@@ -46,12 +46,8 @@ func main() {
 
 	router.POST("/register", controllers.RegisterUser)
 	router.POST("/login", controllers.LoginUser)
-<<<<<<< HEAD
 	router.GET("/courier/:courier_id/orders", controllers.GetOrdersByCourierID)
 	router.PUT("/order/:order_id/status", controllers.UpdateOrderStatus)
-=======
->>>>>>> 26105a9d8953654e5fa465ca09aca7589d85d8f5
-
 	protected := router.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 	{
