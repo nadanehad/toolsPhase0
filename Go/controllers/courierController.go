@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
 func GetOrdersByCourierID(c *gin.Context) {
-	// Parse courier_id from query parameters
 	courierIDParam := c.Param("courier_id")
 	courierID, err := strconv.Atoi(courierIDParam)
 	if err != nil {
@@ -17,14 +17,12 @@ func GetOrdersByCourierID(c *gin.Context) {
 		return
 	}
 
-	// Fetch all orders for the specified courier
 	var orders []models.Order
 	if result := DB.Where("courier_id = ?", courierID).Find(&orders); result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve orders"})
 		return
 	}
 
-	// Return the list of orders
 	c.JSON(http.StatusOK, orders)
 }
 
@@ -60,6 +58,7 @@ func UpdateOrderStatus(c *gin.Context) {
 		return
 	}
 
+	// Log the status change in StatusHistory
 	statusHistory := models.StatusHistory{
 		OrderID: uint(orderID),
 		Status:  statusUpdate.Status,
