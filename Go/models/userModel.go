@@ -8,6 +8,7 @@ type User struct {
 	Email    string `json:"email" gorm:"unique" binding:"required,email"`
 	Phone    string `json:"phone" binding:"required"`
 	Password string `json:"password" binding:"required,min=8"`
+	Role     string `json:"role"`
 }
 
 type LoginRequest struct {
