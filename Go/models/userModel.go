@@ -8,10 +8,8 @@ type User struct {
 	Email    string `json:"email" gorm:"unique" binding:"required,email"`
 	Phone    string `json:"phone" binding:"required"`
 	Password string `json:"password" binding:"required,min=8"`
-<<<<<<< HEAD
 	Role     string `json:"role"`
-=======
->>>>>>> 26105a9d8953654e5fa465ca09aca7589d85d8f5
+
 }
 
 type LoginRequest struct {
