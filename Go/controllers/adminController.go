@@ -33,7 +33,7 @@ func AssignOrder(c *gin.Context) {
 	}
 
 	// Assign the order to the courier
-	order.CourierID = &assignInput.CourierID
+	order.CourierID = assignInput.CourierID
 	order.Status = "Awaiting Courier Acceptance" 
 
 	if err := DB.Save(&order).Error; err != nil {
