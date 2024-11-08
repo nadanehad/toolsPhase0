@@ -18,5 +18,5 @@ type LoginRequest struct {
 }
 
 func AutoMigrate(DB *gorm.DB) {
-	DB.AutoMigrate(&User{}, &Order{})
+	DB.AutoMigrate(&User{}, &Order{},&StatusHistoy{})
 }
