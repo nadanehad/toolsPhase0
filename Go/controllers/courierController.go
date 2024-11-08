@@ -35,7 +35,7 @@ func AcceptOrDeclineOrder(c *gin.Context) {
 		order.Status = "In Progress"
 	} else {
 		order.Status = "Pending Assignment"
-		order.CourierID = nil // Reset courier assignment
+		order.CourierID = 0// Reset courier assignment
 	}
 
 	if err := DB.Save(&order).Error; err != nil {
