@@ -9,6 +9,13 @@ import (
 )
 
 func AssignOrder(c *gin.Context) {
+	// Check if the user's role is "admin"
+	role, _ := c.Get("role")
+	if role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		return
+	}
+
 	var assignInput struct {
 		OrderID   uint `json:"order_id" binding:"required"`
 		CourierID uint `json:"courier_id" binding:"required"`
@@ -19,29 +26,25 @@ func AssignOrder(c *gin.Context) {
 		return
 	}
 
-	// Fetch the order to be assigned
 	var order models.Order
 	if result := DB.First(&order, assignInput.OrderID); result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
 		return
 	}
 
-	// Ensure the order is in a state that can be assigned 
 	if order.Status != "Pending Assignment" && order.Status != "Pending" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Order cannot be assigned in its current status"})
 		return
 	}
 
-	// Assign the order to the courier
 	order.CourierID = assignInput.CourierID
-	order.Status = "Awaiting Courier Acceptance" 
+	order.Status = "Awaiting Courier Acceptance"
 
 	if err := DB.Save(&order).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to assign order"})
 		return
 	}
 
-	
 	statusHistory := models.StatusHistory{
 		OrderID: order.ID,
 		Status:  "Assigned to Courier",
@@ -55,6 +58,13 @@ func AssignOrder(c *gin.Context) {
 }
 
 func GetAllOrders(c *gin.Context) {
+	// Check if the user's role is "admin"
+	role, _ := c.Get("role")
+	if role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		return
+	}
+
 	var orders []models.Order
 	if result := DB.Find(&orders); result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve orders"})
@@ -64,6 +74,13 @@ func GetAllOrders(c *gin.Context) {
 }
 
 func UpdateOrder(c *gin.Context) {
+	// Check if the user's role is "admin"
+	role, _ := c.Get("role")
+	if role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		return
+	}
+
 	var input models.Order
 	orderIDParam := c.Param("order_id")
 	orderID, err := strconv.Atoi(orderIDParam)
@@ -100,6 +117,13 @@ func UpdateOrder(c *gin.Context) {
 }
 
 func DeleteOrder(c *gin.Context) {
+	// Check if the user's role is "admin"
+	role, _ := c.Get("role")
+	if role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		return
+	}
+
 	orderIDParam := c.Param("order_id")
 	orderID, err := strconv.Atoi(orderIDParam)
 	if err != nil {
@@ -115,50 +139,69 @@ func DeleteOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Order deleted successfully"})
 }
 
-func GetAndManageCourierOrders(c *gin.Context) {
-	courierIDParam := c.Param("courier_id")
-	courierID, err := strconv.Atoi(courierIDParam)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid courier ID"})
+func GetAwaitingCourierAcceptanceOrders(c *gin.Context) {
+	// Check if the user's role is "admin"
+	role, _ := c.Get("role")
+	if role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
 
+	// Retrieve all orders with the "Awaiting Courier Acceptance" status
 	var orders []models.Order
-	if result := DB.Where("courier_id = ?", courierID).Find(&orders); result.Error != nil {
+	if result := DB.Where("status = ?", "Awaiting Courier Acceptance").Find(&orders); result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve orders"})
 		return
 	}
 
-	c.JSON(http.StatusOK, orders)
+	// Return the orders with "Awaiting Courier Acceptance" status
+	c.JSON(http.StatusOK, gin.H{"orders": orders})
 }
 
-func ReassignOrder(c *gin.Context) {
-	var input struct {
-		NewCourierID uint `json:"new_courier_id" binding:"required"`
-	}
-	orderIDParam := c.Param("order_id")
-	orderID, err := strconv.Atoi(orderIDParam)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid order ID"})
+func ReassignOrders(c *gin.Context) {
+	// Check if the user's role is "admin"
+	role, _ := c.Get("role")
+	if role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
 
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+	// Parse the request body to get the new courier ID
+	var requestBody struct {
+		NewCourierID *uint `json:"new_courier_id" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil || requestBody.NewCourierID == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload, new_courier_id is required"})
 		return
 	}
 
-	var order models.Order
-	if err := DB.First(&order, orderID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
+	// Retrieve all orders with the "Awaiting Courier Acceptance" status
+	var orders []models.Order
+	if result := DB.Where("status = ?", "Awaiting Courier Acceptance").Find(&orders); result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve orders"})
 		return
 	}
 
-	order.CourierID = input.NewCourierID
-	if err := DB.Save(&order).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reassign courier"})
-		return
+	// Reassign orders to the new courier ID
+	for i := range orders {
+		orders[i].CourierID = *requestBody.NewCourierID
+		orders[i].Status = "Reassigned" // Update status to indicate reassignment
+		if err := DB.Save(&orders[i]).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reassign order"})
+			return
+		}
+
+		// Record the reassignment in StatusHistory
+		statusHistory := models.StatusHistory{
+			OrderID: orders[i].ID,
+			Status:  "Reassigned to new courier",
+		}
+		if err := DB.Create(&statusHistory).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record reassignment history"})
+			return
+		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Order reassigned successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Orders reassigned successfully", "orders": orders})
 }
