@@ -10,15 +10,18 @@ import (
 )
 
 func AcceptOrDeclineOrder(c *gin.Context) {
+	// Check if the user's role is "courier"
+	role, _ := c.Get("role")
+	if role != "courier" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		return
+	}
+
 	var action struct {
 		Accept bool `json:"accept"`
 	}
 	orderIDParam := c.Param("order_id")
-	courierID, exists := c.Get("courierID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	courierID, _ := c.Get("userID") // Use userID for courierID as per session
 
 	if err := c.ShouldBindJSON(&action); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -35,7 +38,7 @@ func AcceptOrDeclineOrder(c *gin.Context) {
 		order.Status = "In Progress"
 	} else {
 		order.Status = "Pending Assignment"
-		order.CourierID = 0// Reset courier assignment
+		order.CourierID = 0 // Reset courier assignment
 	}
 
 	if err := DB.Save(&order).Error; err != nil {
@@ -47,12 +50,14 @@ func AcceptOrDeclineOrder(c *gin.Context) {
 }
 
 func GetOrdersByCourierID(c *gin.Context) {
-	courierIDParam := c.Param("courier_id")
-	courierID, err := strconv.Atoi(courierIDParam)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid courier ID"})
+	// Check if the user's role is "courier"
+	role, _ := c.Get("role")
+	if role != "courier" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
+
+	courierID, _ := c.Get("userID")
 
 	var orders []models.Order
 	if result := DB.Where("courier_id = ?", courierID).Find(&orders); result.Error != nil {
@@ -64,6 +69,13 @@ func GetOrdersByCourierID(c *gin.Context) {
 }
 
 func UpdateOrderStatus(c *gin.Context) {
+	// Check if the user's role is "courier"
+	role, _ := c.Get("role")
+	if role != "courier" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		return
+	}
+
 	var statusUpdate struct {
 		Status string `json:"status" binding:"required"`
 	}
@@ -95,7 +107,6 @@ func UpdateOrderStatus(c *gin.Context) {
 		return
 	}
 
-	// Log the status change in StatusHistory
 	statusHistory := models.StatusHistory{
 		OrderID: uint(orderID),
 		Status:  statusUpdate.Status,
