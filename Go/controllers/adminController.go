@@ -41,7 +41,7 @@ func AssignOrder(c *gin.Context) {
 		return
 	}
 
-	 Add an entry in StatusHistory to log the assignment action
+	
 	statusHistory := models.StatusHistory{
 		OrderID: order.ID,
 		Status:  "Assigned to Courier",
