@@ -1,0 +1,24 @@
+.home-container {
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+}
+
+.home-button {
+    display: block;
+    width: 200px;
+    padding: 15px;
+    margin: 10px auto;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #218838;
+}

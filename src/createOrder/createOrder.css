@@ -1,0 +1,51 @@
+.create-order-container {
+    background-color: #fff;
+    width: 100%;
+    max-width: 600px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f4f4f4;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: #28a745;
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #218838;
+}

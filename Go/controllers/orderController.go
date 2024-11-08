@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"playlist/models"
 
@@ -10,28 +11,37 @@ import (
 func CreateOrder(c *gin.Context) {
 	var order models.Order
 
+	// Logging the incoming JSON data
 	if err := c.ShouldBindJSON(&order); err != nil {
+		log.Println("Bind Error:", err) // Debug log for binding issue
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
 
 	userID, exists := c.Get("userID")
 	if !exists {
+		log.Println("Unauthorized: No user ID found") // Debug log for unauthorized user
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
+	log.Println("User ID:", userID) // Log the User ID
+
 	order.UserID = userID.(uint)
 
 	if result := DB.Create(&order); result.Error != nil {
+		log.Println("Database Create Error:", result.Error) // Debug log for database error
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create order"})
 		return
 	}
+
+	log.Println("Order created successfully for User ID:", userID) // Log successful creation
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Order created successfully", "order": order})
 }
 
 // fetch the orders for the logged in user
+
 func GetUserOrders(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {

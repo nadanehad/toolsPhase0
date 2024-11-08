@@ -1,0 +1,53 @@
+.my-orders-container {
+    background-color: #fff;
+    width: 100%;
+    max-width: 600px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    text-align: left; /* Align text to the left for better readability */
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    text-align: center; /* Center the heading */
+}
+
+.order-item {
+    margin-bottom: 20px; /* Add space between orders */
+    padding: 15px;
+    border: 1px solid #ddd; /* Add border for each order */
+    border-radius: 8px;
+    background-color: #f9f9f9; /* Light background for order items */
+}
+
+.order-id {
+    font-weight: bold; /* Bold for better visibility */
+    color: #007bff; /* Bootstrap primary color */
+}
+
+.order-details {
+    margin: 5px 0; /* Margin for details */
+    font-size: 16px; /* Slightly larger font for details */
+    color: #555; /* Darker color for readability */
+}
+
+.order-button {
+    display: inline-block; /* Make button inline for better layout */
+    width: 100%; /* Full width for buttons */
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center; /* Center the button text */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.order-button:hover {
+    background-color: #218838; /* Darker shade on hover */
+}

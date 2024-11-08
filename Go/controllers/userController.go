@@ -28,34 +28,43 @@ func RegisterUser(c *gin.Context) {
 }
 
 func LoginUser(c *gin.Context) {
-	var loginReq struct {
-		Email    string `json:"email" binding:"required,email"`
-		Password string `json:"password" binding:"required"`
-	}
+	// Use the LoginRequest struct for the login data
+	var loginReq models.LoginRequest
 	var storedUser models.User
 
+	// Bind incoming JSON request to loginReq struct
 	if err := c.ShouldBindJSON(&loginReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
+	// Find the user by email
 	if err := DB.Where("email = ?", loginReq.Email).First(&storedUser).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
+	// Compare the plain text password from the request with the stored password
 	if storedUser.Password != loginReq.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
+	// Generate a new session ID for the user
 	sessionID := uuid.New().String()
 
+	// Store the session ID in session store
 	sessions.SessionStore.Lock()
 	sessions.SessionStore.Sessions[sessionID] = storedUser.ID
 	sessions.SessionStore.Unlock()
 
+	// Set the session ID as a cookie in the response
 	c.SetCookie("session_id", sessionID, 3600, "/", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful!"})
+	// Return the login response with session token and role
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Login successful!",
+		"token":   sessionID,
+		"role":    storedUser.Role,
+	})
 }
