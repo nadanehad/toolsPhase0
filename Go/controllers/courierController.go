@@ -9,6 +9,43 @@ import (
 	"gorm.io/gorm"
 )
 
+func AcceptOrDeclineOrder(c *gin.Context) {
+	var action struct {
+		Accept bool `json:"accept"`
+	}
+	orderIDParam := c.Param("order_id")
+	courierID, exists := c.Get("courierID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&action); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	var order models.Order
+	if result := DB.Where("id = ? AND courier_id = ?", orderIDParam, courierID).First(&order); result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found or not assigned to this courier"})
+		return
+	}
+
+	if action.Accept {
+		order.Status = "In Progress"
+	} else {
+		order.Status = "Pending Assignment"
+		order.CourierID = 0// Reset courier assignment
+	}
+
+	if err := DB.Save(&order).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update order acceptance"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Order acceptance status updated"})
+}
+
 func GetOrdersByCourierID(c *gin.Context) {
 	courierIDParam := c.Param("courier_id")
 	courierID, err := strconv.Atoi(courierIDParam)

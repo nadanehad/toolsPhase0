@@ -55,8 +55,6 @@ func main() {
 
 	router.POST("/register", controllers.RegisterUser)
 	router.POST("/login", controllers.LoginUser)
-	router.GET("/courier/:courier_id/orders", controllers.GetOrdersByCourierID)
-	router.PUT("/order/:order_id/status", controllers.UpdateOrderStatus)
 
 	protected := router.Group("/")
 	protected.Use(middleware.AuthMiddleware())
@@ -65,6 +63,24 @@ func main() {
 		protected.GET("/orders", controllers.GetUserOrders)
 		protected.GET("/order/:order_id", controllers.GetOrderDetails)
 		protected.POST("/order/:order_id/cancel", controllers.CancelOrder)
+	}
+
+	courier := router.Group("/courier")
+	courier.Use(middleware.AuthMiddleware()) // Ensure couriers are authenticated
+	{
+		courier.GET("/:courier_id/orders", controllers.GetOrdersByCourierID)
+		courier.POST("/order/:order_id/accept", controllers.AcceptOrDeclineOrder)
+		courier.PUT("/order/:order_id/status", controllers.UpdateOrderStatus)
+	}
+	admin := router.Group("/admin")
+	admin.Use(middleware.AuthMiddleware()) // Ensure only admins can access
+	{
+		admin.POST("/assign-order", controllers.AssignOrder)                    
+		admin.GET("/orders", controllers.GetAllOrders)                        
+		admin.PUT("/order/:order_id", controllers.UpdateOrder)                
+		admin.DELETE("/order/:order_id", controllers.DeleteOrder)              
+		admin.GET("/courier/:courier_id/orders", controllers.GetAndManageCourierOrders) 
+		admin.PUT("/order/:order_id/reassign", controllers.ReassignOrder)       
 	}
 
 	router.Run(":8080")
