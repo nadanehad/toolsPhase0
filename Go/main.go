@@ -75,8 +75,12 @@ func main() {
 	admin := router.Group("/admin")
 	admin.Use(middleware.AuthMiddleware()) // Ensure only admins can access
 	{
-		admin.POST("/assign-order", controllers.AssignOrder)
-		admin.GET("/manage-orders", controllers.ManageOrders)
+		admin.POST("/assign-order", controllers.AssignOrder)                    
+		admin.GET("/orders", controllers.GetAllOrders)                        
+		admin.PUT("/order/:order_id", controllers.UpdateOrder)                
+		admin.DELETE("/order/:order_id", controllers.DeleteOrder)              
+		admin.GET("/courier/:courier_id/orders", controllers.GetAndManageCourierOrders) 
+		admin.PUT("/order/:order_id/reassign", controllers.ReassignOrder)       
 	}
 
 	router.Run(":8080")
