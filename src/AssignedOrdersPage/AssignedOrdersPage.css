@@ -1,0 +1,73 @@
+.assigned-orders-container {
+    background-color: #fff;
+    max-width: 700px;
+    padding: 30px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.assigned-orders-container h1 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 26px;
+    text-align: center;
+}
+
+.order-item {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.order-item p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+button {
+    width: 48%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+button.decline {
+    background-color: #dc3545;
+}
+
+button.decline:hover {
+    background-color: #c82333;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f4f4f4;
+    transition: all 0.3s ease;
+}
+
+select:focus {
+    border-color: #28a745;
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+}
