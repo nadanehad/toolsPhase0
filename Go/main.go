@@ -36,15 +36,13 @@ func initDB() *gorm.DB {
 		log.Fatal("Failed to connect to database:", errDB)
 	}
 
-	// Run migrations
 	DB.AutoMigrate(&models.User{}, &models.Order{}, &models.StatusHistory{})
 	return DB
 }
 
 func main() {
-	DB := initDB() // Initialize and assign DB
+	DB := initDB() 
 
-	// Set DB in controllers
 	controllers.DB = DB
 
 	router := gin.Default()
@@ -61,7 +59,7 @@ func main() {
 	router.POST("/login", controllers.LoginUser)
 
 	protected := router.Group("/")
-	protected.Use(middleware.AuthMiddleware(DB)) // Pass DB instance here
+	protected.Use(middleware.AuthMiddleware(DB)) 
 	{
 		protected.POST("/create-order", controllers.CreateOrder)
 		protected.GET("/orders", controllers.GetUserOrders)
@@ -70,7 +68,7 @@ func main() {
 	}
 
 	courier := router.Group("/courier")
-	courier.Use(middleware.AuthMiddleware(DB), CourierOnlyMiddleware()) // Pass DB instance here
+	courier.Use(middleware.AuthMiddleware(DB), CourierOnlyMiddleware()) 
 	{
 		courier.GET("/:courier_id/orders", controllers.GetOrdersByCourierID)
 		courier.POST("/order/:order_id/accept", controllers.AcceptOrDeclineOrder)
@@ -91,11 +89,10 @@ func main() {
 	router.Run(":8080")
 }
 
-// Middleware to allow only couriers to access certain routes
 func CourierOnlyMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, exists := c.Get("role")
-		if !exists || role != "courier" {
+		if !exists || role != "Courier" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Access denied: Couriers only"})
 			c.Abort()
 			return
@@ -104,11 +101,10 @@ func CourierOnlyMiddleware() gin.HandlerFunc {
 	}
 }
 
-// Middleware to allow only admins to access certain routes
 func AdminOnlyMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, exists := c.Get("role")
-		if !exists || role != "admin" {
+		if !exists || role != "Admin" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Access denied: Admins only"})
 			c.Abort()
 			return
