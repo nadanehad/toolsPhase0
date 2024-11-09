@@ -10,9 +10,8 @@ import (
 )
 
 func AcceptOrDeclineOrder(c *gin.Context) {
-	// Check if the user's role is "courier"
 	role, _ := c.Get("role")
-	if role != "courier" {
+	if role != "Courier" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
@@ -21,7 +20,7 @@ func AcceptOrDeclineOrder(c *gin.Context) {
 		Accept bool `json:"accept"`
 	}
 	orderIDParam := c.Param("order_id")
-	courierID, _ := c.Get("userID") // Use userID for courierID as per session
+	courierID, _ := c.Get("userID") 
 
 	if err := c.ShouldBindJSON(&action); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -38,7 +37,7 @@ func AcceptOrDeclineOrder(c *gin.Context) {
 		order.Status = "In Progress"
 	} else {
 		order.Status = "Pending Assignment"
-		order.CourierID = 0 // Reset courier assignment
+		order.CourierID = 0 
 	}
 
 	if err := DB.Save(&order).Error; err != nil {
@@ -50,9 +49,8 @@ func AcceptOrDeclineOrder(c *gin.Context) {
 }
 
 func GetOrdersByCourierID(c *gin.Context) {
-	// Check if the user's role is "courier"
 	role, _ := c.Get("role")
-	if role != "courier" {
+	if role != "Courier" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
@@ -69,9 +67,8 @@ func GetOrdersByCourierID(c *gin.Context) {
 }
 
 func UpdateOrderStatus(c *gin.Context) {
-	// Check if the user's role is "courier"
 	role, _ := c.Get("role")
-	if role != "courier" {
+	if role != "Courier" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
