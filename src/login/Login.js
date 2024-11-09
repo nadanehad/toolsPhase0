@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { loginUser } from '../api';  // Importing the API call for login
+import { loginUser } from '../api'; // Importing the API call for login
 import { useNavigate } from 'react-router-dom'; // Importing useNavigate for routing
 import './login.css'; // Importing CSS for styling
 
@@ -32,24 +32,27 @@ const Login = () => {
     setMessage('');
 
     try {
-      // Making API call to login the user
-      const response = await loginUser(formData);
+      // Making API call to log in the user
+      const { role } = await loginUser(formData);
       
       // Logging response for debugging purposes
-      console.log('Login response:', response);
+      console.log('User role:', role);
       
-      // Save the token and role to localStorage
-      localStorage.setItem('token', response.token); // Save token to local storage
-      localStorage.setItem('role', response.role);   // Save role to local storage
-      
+      // Store the role in localStorage
+      localStorage.setItem('role', role);
+
       // Setting the success message
       setMessage('Login successful!');
 
       // Redirecting the user based on their role
-      if (response.role === "User") {
+      if (role === "User") {
         navigate('/home'); // Redirect to Home page for User role
+      } else if (role === "Admin") {
+        navigate('/manage-orders'); // Redirect to Manage Orders for Admin role
+      } else if (role === "Courier") {
+        navigate('/assigned-orders'); // Redirect to Assigned Orders for Courier role
       } else {
-        navigate('/dashboard'); // Redirect to Dashboard for Admin or Courier role
+        setError('Unrecognized role'); // Error if role is unknown
       }
     } catch (error) {
       // Setting the error message if login fails
