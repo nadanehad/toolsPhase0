@@ -1,103 +1,50 @@
 .manage-orders-container {
-    background-color: #fff;
-    max-width: 900px;
-    padding: 30px;
-    margin: auto;
-    border-radius: 10px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-    text-align: left;
-}
-
-.manage-orders-container h1 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 26px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h1 {
     text-align: center;
-}
-
-.orders-table {
+    color: #333;
+  }
+  
+  .orders-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-}
-
-.orders-table th, .orders-table td {
-    padding: 15px;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 10px;
     border: 1px solid #ddd;
-    font-size: 16px;
     text-align: center;
-}
-
-.orders-table th {
-    background-color: #f4f4f4;
-    color: #555;
-}
-
-button {
-    padding: 8px 16px;
+  }
+  
+  .status-select,
+  .courier-input {
+    margin-right: 10px;
+  }
+  
+  .delete-button,
+  .reassign-button {
     background-color: #28a745;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 8px 12px;
     cursor: pointer;
-    margin: 5px;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
+    margin-top: 5px;
+  }
+  
+  .delete-button:hover,
+  .reassign-button:hover {
     background-color: #218838;
-}
-
-button.delete {
-    background-color: #dc3545;
-}
-
-button.delete:hover {
-    background-color: #c82333;
-}
-
-select {
-    padding: 8px;
+  }
+  
+  .courier-input {
+    width: 120px;
+    padding: 5px;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    background-color: #f4f4f4;
-    transition: all 0.3s ease;
-}
-
-select:focus {
-    border-color: #28a745;
-    background-color: #fff;
-    outline: none;
-    box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
-}
-
-.reassign-container {
-    margin-top: 30px;
-    text-align: center;
-}
-
-.reassign-container input {
-    width: 200px;
-    padding: 10px;
-    margin: 5px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    background-color: #f4f4f4;
-    transition: all 0.3s ease;
-}
-
-.reassign-container input:focus {
-    border-color: #28a745;
-    background-color: #fff;
-    outline: none;
-    box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
-}
-
-.reassign-container button {
-    width: auto;
-    padding: 10px 20px;
-    font-size: 16px;
-}
+    border-radius: 4px;
+  }
+  
