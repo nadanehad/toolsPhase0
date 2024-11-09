@@ -11,7 +11,7 @@ import (
 func AssignOrder(c *gin.Context) {
 	// Check if the user's role is "admin"
 	role, _ := c.Get("role")
-	if role != "admin" {
+	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
@@ -60,7 +60,7 @@ func AssignOrder(c *gin.Context) {
 func GetAllOrders(c *gin.Context) {
 	// Check if the user's role is "admin"
 	role, _ := c.Get("role")
-	if role != "admin" {
+	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
@@ -76,7 +76,7 @@ func GetAllOrders(c *gin.Context) {
 func UpdateOrder(c *gin.Context) {
 	// Check if the user's role is "admin"
 	role, _ := c.Get("role")
-	if role != "admin" {
+	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
@@ -119,7 +119,7 @@ func UpdateOrder(c *gin.Context) {
 func DeleteOrder(c *gin.Context) {
 	// Check if the user's role is "admin"
 	role, _ := c.Get("role")
-	if role != "admin" {
+	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
@@ -142,7 +142,7 @@ func DeleteOrder(c *gin.Context) {
 func GetAwaitingCourierAcceptanceOrders(c *gin.Context) {
 	// Check if the user's role is "admin"
 	role, _ := c.Get("role")
-	if role != "admin" {
+	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
@@ -161,7 +161,7 @@ func GetAwaitingCourierAcceptanceOrders(c *gin.Context) {
 func ReassignOrders(c *gin.Context) {
 	// Check if the user's role is "admin"
 	role, _ := c.Get("role")
-	if role != "admin" {
+	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
