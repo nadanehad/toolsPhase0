@@ -23,10 +23,29 @@ func initDB() *gorm.DB {
 	}
 
 	dbUser := os.Getenv("DB_USER")
+	if dbUser == "" {
+		dbUser = "root"
+	}
+
 	dbPass := os.Getenv("DB_PASS")
+	if dbPass == "" {
+		dbPass = "root"
+	}
+
 	dbHost := os.Getenv("DB_HOST")
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+
 	dbPort := os.Getenv("DB_PORT")
+	if dbPort == "" {
+		dbPort = "3306"
+	}
+
 	dbName := os.Getenv("DB_NAME")
+	if dbName == "" {
+		dbName = "userdb"
+	}
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		dbUser, dbPass, dbHost, dbPort, dbName)
@@ -41,7 +60,7 @@ func initDB() *gorm.DB {
 }
 
 func main() {
-	DB := initDB() 
+	DB := initDB()
 
 	controllers.DB = DB
 
@@ -59,7 +78,7 @@ func main() {
 	router.POST("/login", controllers.LoginUser)
 
 	protected := router.Group("/")
-	protected.Use(middleware.AuthMiddleware(DB)) 
+	protected.Use(middleware.AuthMiddleware(DB))
 	{
 		protected.POST("/create-order", controllers.CreateOrder)
 		protected.GET("/orders", controllers.GetUserOrders)
@@ -68,7 +87,7 @@ func main() {
 	}
 
 	courier := router.Group("/courier")
-	courier.Use(middleware.AuthMiddleware(DB), CourierOnlyMiddleware()) 
+	courier.Use(middleware.AuthMiddleware(DB), CourierOnlyMiddleware())
 	{
 		courier.GET("/:courier_id/orders", controllers.GetOrdersByCourierID)
 		courier.POST("/order/:order_id/accept", controllers.AcceptOrDeclineOrder)
