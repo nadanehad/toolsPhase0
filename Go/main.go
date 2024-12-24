@@ -23,30 +23,12 @@ func initDB() *gorm.DB {
 	}
 
 	dbUser := os.Getenv("DB_USER")
-	if dbUser == "" {
-		dbUser = "root"
-	}
-
 	dbPass := os.Getenv("DB_PASS")
-	if dbPass == "" {
-		dbPass = "root"
-	}
-
 	dbHost := os.Getenv("DB_HOST")
-	if dbHost == "" {
-		dbHost = "localhost"
-	}
-
 	dbPort := os.Getenv("DB_PORT")
-	if dbPort == "" {
-		dbPort = "3306"
-	}
-
 	dbName := os.Getenv("DB_NAME")
-	if dbName == "" {
-		dbName = "userdb"
-	}
 
+	
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		dbUser, dbPass, dbHost, dbPort, dbName)
 
