@@ -49,8 +49,9 @@ func main() {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{""https://frontend-image-nadanehad-dev.apps.rm2.thpm.p1.openshiftapps.com"
-"},
+		AllowOrigins:     []string{
+			"https://frontend-image-nadanehad-dev.apps.rm2.thpm.p1.openshiftapps.com",
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
