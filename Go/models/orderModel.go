@@ -10,6 +10,6 @@ type Order struct {
 	PackageDetails  string  `json:"package_details"`
 	DeliveryTime    string  `json:"delivery_time"`
 	DeliveryFee     float64 `json:"delivery_fee"`
-	CourierID       uint    `json:"courier_id"`
+	CourierID       uint    `json:"courier_id" gorm:"default:null"`
 	Status          string  `json:"status" gorm:"default:'Pending'"`
 }
