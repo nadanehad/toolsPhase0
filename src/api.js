@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL ;
+axios.defaults.withCredentials = true;
 
 export const registerUser = async (formData) => {
   try {
