@@ -11,6 +11,7 @@ RUN npm install
 # Copy both the src and public directories into the container
 # Make sure both `src` and `public` are copied to their expected locations in /app
 COPY ./src /app/src
+COPY ./src/public /app/public
 
 # Expose the port the app runs on
 EXPOSE 3000
