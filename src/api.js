@@ -32,8 +32,6 @@ export const loginUser = async (credentials) => {
   }
 };
 
-
-
 export const createOrder = async (orderData) => {
   try {
     const response = await axios.post(`${API_URL}/create-order`, orderData, {
@@ -50,11 +48,8 @@ export const fetchUserOrders = async () => {
     const response = await axios.get(`${API_URL}/orders`, {
       withCredentials: true,
     });
-    console.log("Full API response:", response);
-    console.log("Response data structure:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching user orders:", error);
     throw error;
   }
 };
@@ -88,19 +83,11 @@ export const fetchOrdersByCourier = async (courierId) => {
     const response = await axios.get(`${API_URL}/courier/${courierId}/orders`, {
       withCredentials: true,
     });
-    if (response.status === 200) {
-      console.log("Orders fetched successfully:", response.data);
-      return response.data;
-    } else {
-      console.error("Unexpected response status:", response.status);
-      return [];
-    }
+    return response.data;
   } catch (error) {
-    console.error('Error fetching orders by courier ID:', error);
     throw error;
   }
 };
-
 
 // Accept or decline an order
 export const acceptOrDeclineOrder = async (orderId, accept) => {
@@ -147,27 +134,44 @@ export const fetchAllOrdersAdmin = async () => {
 // Assign an order to a courier (admin)
 export const assignOrderToCourier = async (orderId, courierId) => {
   try {
+    const payload = { order_id: orderId, courier_id: courierId };
+
+    // Log the payload to ensure it's correct
+    console.log('Sending assign order payload:', payload);
+
     const response = await axios.post(
-      `${API_URL}/admin/assign-order`,
-      { order_id: orderId, courier_id: courierId },
+      `${API_URL}/admin/assign-order`, // Correct API endpoint
+      payload,  // Ensure you're sending the payload properly
       { withCredentials: true }
     );
+
     return response.data;
   } catch (error) {
+    console.error('Error in API request:', error.response || error);  // Log any error
     throw error;
   }
 };
 
-// Reassign orders (admin)
-export const reassignOrdersAdmin = async ({ order_id, new_courier_id }) => {
+// API call for reassigning courier
+export const reassignOrderToCourier = async (orderId, courierId) => {
   try {
-    const response = await axios.put(
-      `${API_URL}/admin/reassign-orders`,
-      { new_courier_id },
-      { withCredentials: true }
+    const payload = { order_id: orderId, new_courier_id: courierId };  // Correct key
+
+    console.log('Sending reassign payload:', payload);
+
+    const response = await axios.post(
+      `${API_URL}/admin/reassign-orders`, // Correct route for reassigning
+      payload,  
+      { withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',  // Ensure the correct content type
+        },
+       }
     );
+
     return response.data;
   } catch (error) {
+    console.error('Error reassigning order:', error.response || error);
     throw error;
   }
 };
