@@ -58,6 +58,13 @@ func main() {
 	ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin"},
 	AllowCredentials: true, // Allow cookies
 }))
+	router.OPTIONS("/*path", func(c *gin.Context) {
+        c.Header("Access-Control-Allow-Origin", c.Request.Header.Get("Origin"))
+        c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
+        c.Header("Access-Control-Allow-Credentials", "true")
+        c.Status(http.StatusOK)
+    })
 
 
 
