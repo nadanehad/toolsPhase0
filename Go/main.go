@@ -51,12 +51,17 @@ func main() {
 	router.Use(cors.New(cors.Config{
 	AllowOrigins: []string{
 		"https://frontend-nadanehad-dev.apps.rm2.thpm.p1.openshiftapps.com", // Frontend URL
-		"http://localhost:3000",                                           // For local testing
+		
 	},
-	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Include OPTIONS
-	AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-	ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin"},
-	AllowCredentials: true, // Allow cookies
+	AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Include OPTIONS method
+    AllowHeaders: []string{
+        "Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With",
+    },
+    ExposeHeaders: []string{
+        "Content-Length", "Access-Control-Allow-Origin",
+    },
+    AllowCredentials: true, // Allow cookies
+    MaxAge: 12 * time.Hour, // Cache the CORS preflight response
 }))
 	router.OPTIONS("/*path", func(c *gin.Context) {
         c.Header("Access-Control-Allow-Origin", c.Request.Header.Get("Origin"))
