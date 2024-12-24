@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"playlist/models"
 	"strconv"
@@ -158,50 +159,60 @@ func GetAwaitingCourierAcceptanceOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"orders": orders})
 }
 
+// ReassignOrders function
+
 func ReassignOrders(c *gin.Context) {
-	// Check if the user's role is "admin"
 	role, _ := c.Get("role")
 	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
 		return
 	}
 
-	// Parse the request body to get the new courier ID
+	// Ensure field names match the frontend payload
 	var requestBody struct {
-		NewCourierID *uint `json:"new_courier_id" binding:"required"`
+		OrderID      uint `json:"order_id" binding:"required"`
+		NewCourierID uint `json:"new_courier_id" binding:"required"` // Correct the field name to match frontend
 	}
 
-	if err := c.ShouldBindJSON(&requestBody); err != nil || requestBody.NewCourierID == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload, new_courier_id is required"})
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		fmt.Println("Error binding JSON:", err) // Log the error for debugging
 		return
 	}
 
-	// Retrieve all orders with the "Awaiting Courier Acceptance" status
-	var orders []models.Order
-	if result := DB.Where("status = ?", "Awaiting Courier Acceptance").Find(&orders); result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve orders"})
+	var order models.Order
+	// Ensure the order exists in the DB
+	if result := DB.First(&order, requestBody.OrderID); result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
 		return
 	}
 
-	// Reassign orders to the new courier ID
-	for i := range orders {
-		orders[i].CourierID = *requestBody.NewCourierID
-		orders[i].Status = "Reassigned" // Update status to indicate reassignment
-		if err := DB.Save(&orders[i]).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reassign order"})
-			return
-		}
-
-		// Record the reassignment in StatusHistory
-		statusHistory := models.StatusHistory{
-			OrderID: orders[i].ID,
-			Status:  "Reassigned to new courier",
-		}
-		if err := DB.Create(&statusHistory).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record reassignment history"})
-			return
-		}
+	// If the order was declined, reset CourierID and change the status to "Pending"
+	if order.Status == "Awaiting Courier Acceptance" || order.Status == "Declined" {
+		order.Status = "Pending" // Change the status back to Pending or any suitable state
+		order.CourierID = 0      // Reset CourierID since the order was declined
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Orders reassigned successfully", "orders": orders})
+	// Perform reassign
+	order.CourierID = requestBody.NewCourierID
+	order.Status = "Awaiting Courier Acceptance" // Change status to "Awaiting Courier Acceptance"
+
+	// Save updated order
+	if err := DB.Save(&order).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reassign order"})
+		return
+	}
+
+	// Create status history for reassignment
+	statusHistory := models.StatusHistory{
+		OrderID: order.ID,
+		Status:  "Reassigned to new courier",
+	}
+	if err := DB.Create(&statusHistory).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record reassignment history"})
+		return
+	}
+
+	// Success
+	c.JSON(http.StatusOK, gin.H{"message": "Order reassigned successfully", "order": order})
 }
