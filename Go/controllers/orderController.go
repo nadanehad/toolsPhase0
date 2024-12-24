@@ -61,7 +61,7 @@ func CreateOrder(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-
+	log.Println("User ID:", userID)
 	order.UserID = userID.(uint)
 
 	// Create the order in the database
