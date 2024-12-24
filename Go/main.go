@@ -49,16 +49,16 @@ func main() {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-	     AllowOrigins: []string{
-		"https://frontend-image-nadanehad-dev.apps.rm2.thpm.p1.openshiftapps.com", // Frontend
-		"https://backendd-nadanehad-dev.apps.rm2.thpm.p1.openshiftapps.com",     // Backend
-		"http://localhost:3000",                                                 // Local frontend
+	AllowOrigins: []string{
+		"https://frontend-nadanehad-dev.apps.rm2.thpm.p1.openshiftapps.com", // Frontend URL
+		"http://localhost:3000",                                           // For local testing
 	},
-	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Include OPTIONS for preflight requests
+	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Include OPTIONS
 	AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-	ExposeHeaders:    []string{"Content-Length"},
-	AllowCredentials: true,
-         }))
+	ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin"},
+	AllowCredentials: true, // Allow cookies
+}))
+
 
 
 	router.POST("/register", controllers.RegisterUser)
