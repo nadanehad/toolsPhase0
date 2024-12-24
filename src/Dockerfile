@@ -1,6 +1,8 @@
 FROM node:20-alpine
 
 WORKDIR /app
+RUN ls -al ./src
+
 
 # Copy the package.json and package-lock.json from the src directory
 COPY ./src/package.json ./src/package-lock.json ./
