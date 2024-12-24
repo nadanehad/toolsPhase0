@@ -15,6 +15,9 @@ export const loginUser = async (credentials) => {
   try {
     const response = await axios.post(`${API_URL}/login`, credentials, {
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json', // Explicit headers
+      },      
     });
     const { userID, role } = response.data;
 
