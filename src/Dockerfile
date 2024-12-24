@@ -2,14 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy the package.json and package-lock.json from the src directory
+# Debug step: List files in the root of the build context
+RUN ls -al /
+
+# Debug step: List files in the src directory
+RUN ls -al ./src
+
+# Copy package.json and package-lock.json from the src directory
 COPY ./src/package.json ./src/package-lock.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy both the src and public directories into the container
-# Make sure both `src` and `public` are copied to their expected locations in /app
+# Copy the entire src and public directories
 COPY ./src /app/src
 COPY ./src/public /app/public
 
