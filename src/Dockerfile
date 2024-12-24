@@ -1,20 +1,19 @@
-# Use the base image
 FROM node:20-alpine
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json from the src folder
+# Copy the package.json and package-lock.json from the src directory
 COPY ./src/package.json ./src/package-lock.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the entire src directory into the container
+# Copy both the src and public directories into the container
+# Make sure both `src` and `public` are copied to their expected locations in /app
 COPY ./src /app/src
+COPY ./src/public /app/public
 
-# Expose the application port
+# Expose the port the app runs on
 EXPOSE 3000
 
-# Start the application
 CMD ["npm", "start"]
