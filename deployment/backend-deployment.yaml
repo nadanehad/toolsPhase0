@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: kenzikhaled/backend:latest 
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_USER
+          value: root
+        - name: DB_PASS
+          value: kenzi123
+        - name: DB_HOST
+          value: mysql # Update if your database service name is different
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_NAME
+          value: userdb
