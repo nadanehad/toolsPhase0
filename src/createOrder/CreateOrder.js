@@ -25,6 +25,10 @@ const CreateOrder = () => {
     e.preventDefault();
     setError('');
     setMessage('');
+    const formattedData = {
+      ...formData,
+      delivery_time: new Date(formData.delivery_time).toISOString() // Convert to ISO 8601
+    };
 
     console.log("Submitting order with data:", formData); 
 
